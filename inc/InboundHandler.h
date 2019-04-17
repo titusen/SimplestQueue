@@ -11,6 +11,7 @@
 #include <iostream>
 #include <wangle/channel/Handler.h>
 #include <folly/ProducerConsumerQueue.h>
+#include <wangle/channel/EventBaseHandler.h>
 #include "TypeDefinitions.h"
 
 class InboundHandler: public wangle::HandlerAdapter<std::string> {
@@ -28,6 +29,8 @@ public:
             std::shared_ptr<folly::AsyncTransportWrapper> sock) override {
         auto pipeline = QueuePipeline::create();
         pipeline->addBack(wangle::AsyncSocketHandler(sock));
+//        pipeline->addBack(
+//                wangle::EventBaseHandler());
         pipeline->addBack(wangle::LineBasedFrameDecoder(8192));
         pipeline->addBack(wangle::StringCodec());
         pipeline->addBack(InboundHandler(queue));
