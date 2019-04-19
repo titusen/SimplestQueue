@@ -18,6 +18,13 @@ class InboundHandler: public wangle::HandlerAdapter<std::string> {
 public:
     InboundHandler(folly::BlockingQueue<std::string> &queue) : queue(queue) {}
     void read(Context* ctx, std::string msg) override;
+    void readException(Context* ctx, folly::exception_wrapper e) override {
+      std::cout << exceptionStr(e) << std::endl;
+      close(ctx);
+    }
+    void readEOF(Context* ctx) override {
+      close(ctx);
+    }
 private:
     folly::BlockingQueue<std::string> &queue;
 };
@@ -29,8 +36,8 @@ public:
             std::shared_ptr<folly::AsyncTransportWrapper> sock) override {
         auto pipeline = QueuePipeline::create();
         pipeline->addBack(wangle::AsyncSocketHandler(sock));
-//        pipeline->addBack(
-//                wangle::EventBaseHandler());
+        pipeline->addBack(
+                wangle::EventBaseHandler());
         pipeline->addBack(wangle::LineBasedFrameDecoder(8192));
         pipeline->addBack(wangle::StringCodec());
         pipeline->addBack(InboundHandler(queue));

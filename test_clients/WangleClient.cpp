@@ -40,7 +40,7 @@ class EchoHandler : public HandlerAdapter<std::string> {
     std::cout << "received from queue: " << msg;
   }
   void readException(Context* ctx, exception_wrapper e) override {
-    std::cout << exceptionStr(e) << std::endl;
+    std::cout << folly::exceptionStr(e) << std::endl;
     close(ctx);
   }
   void readEOF(Context* ctx) override {

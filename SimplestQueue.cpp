@@ -7,6 +7,7 @@
 #include <wangle/channel/AsyncSocketHandler.h>
 #include <wangle/codec/LineBasedFrameDecoder.h>
 #include <wangle/codec/StringCodec.h>
+
 #include "TypeDefinitions.h"
 #include "IQueue.h"
 #include "WangleQueue.h"
@@ -14,7 +15,7 @@
 using namespace std;
 
 int main(int argc, char **argv) {
-
+    google::InitGoogleLogging(argv[0]);
     unique_ptr<IQueue> q(new WangleQueue());
     q->start();
 

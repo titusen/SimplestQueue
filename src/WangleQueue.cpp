@@ -8,25 +8,26 @@
 
 #include "WangleQueue.h"
 
-void threadFunction(folly::BlockingQueue<std::string> *queue, VectorContextStorage *ctxStorage, std::atomic<bool> *isRunning) {
-    while (*isRunning) {
-        std::string msg = queue->take();
+void WangleQueue::sendFunction() {
+    while (isRunning) {
+        std::string msg = queue.take();
+#ifdef DEBUG
         std::cout << msg << std::endl;
-        Context *ctx = ctxStorage->getRandomContext();
-        while (*isRunning && ctx == nullptr) {
+#endif
+        Context *ctx = storage.getRandomContext();
+        while (isRunning && ctx == nullptr) {
             std::this_thread::sleep_for(std::chrono::milliseconds(400));
-            ctx = ctxStorage->getRandomContext();
+            ctx = storage.getRandomContext();
         }
-        ctx->fireWrite(msg);
+        ctx->fireWrite(std::forward<std::string>(msg));
     }
 }
 
 void WangleQueue::start() {
     const size_t numThreads = 4;
-    workerThreads.reserve(numThreads);
     isRunning = true;
     for (size_t i = 0; i < numThreads; ++i) {
-        workerThreads.push_back(std::thread(threadFunction, &queue, &storage, &isRunning));
+        threadPool.add([this](){this->sendFunction();});
     }
 
     inboundServer.childPipeline(std::make_shared<InQueuePipelineFactory>(InQueuePipelineFactory(queue)));

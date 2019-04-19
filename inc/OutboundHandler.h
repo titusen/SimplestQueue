@@ -21,6 +21,13 @@ public:
     OutboundHandler(IContextStorage &storage) : storage(storage) {}
     void transportActive(Context *ctx) override;
     void transportInactive(Context *ctx) override;
+    void readException(Context* ctx, folly::exception_wrapper e) override {
+      LOG(INFO)<< folly::exceptionStr(e);
+      close(ctx);
+    }
+    void readEOF(Context* ctx) override {
+      close(ctx);
+    }
 private:
     IContextStorage &storage;
 };
