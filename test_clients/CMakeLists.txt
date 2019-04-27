@@ -9,6 +9,8 @@ set(CMAKE_CXX_STANDARD 17)
 set(LINKER_FLAGS1 "-lwangle  -lfizz -lfolly -lfollybenchmark -pthread -lglog -lgflags -ldl -ldouble-conversion -lcrypto -lssl")
 set(LINKER_FLAGS2 "-lboost_filesystem -lboost_system -lboost_regex -lboost_coroutine -lboost_context -levent -lsodium -lboost_program_options")
 
-add_executable(WangleClient WangleClient.cpp )
+add_executable(WangleSender WangleClient.cpp )
 
-target_link_libraries(WangleClient ${LINKER_FLAGS1} ${LINKER_FLAGS2})
+add_executable(SimpleReceiver Client.c )
+
+target_link_libraries(WangleSender ${LINKER_FLAGS1} ${LINKER_FLAGS2})
