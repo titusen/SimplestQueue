@@ -1,12 +1,5 @@
-/*
- * VectorContextStorage.h
- *
- *  Created on: Mar 22, 2019
- *      Author: titusen
- */
-
-#ifndef INC_VECTORCONTEXTSTORAGE_H_
-#define INC_VECTORCONTEXTSTORAGE_H_
+#ifndef VECTORCONTEXTSTORAGE_H_
+#define VECTORCONTEXTSTORAGE_H_
 
 #include <vector>
 #include <shared_mutex>
@@ -25,4 +18,4 @@ private:
 
 
 
-#endif /* INC_VECTORCONTEXTSTORAGE_H_ */
+#endif /* VECTORCONTEXTSTORAGE_H_ */

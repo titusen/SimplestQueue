@@ -1,12 +1,13 @@
-/*
- * WangleQueue.cpp
- *
- *  Created on: Mar 17, 2019
- *      Author: titusen
- */
 #include <chrono>
 
 #include "WangleQueue.h"
+#include "VectorContextStorage.h"
+
+WangleQueue::WangleQueue() : storage(new VectorContextStorage()) {}
+
+WangleQueue::~WangleQueue() {
+    stop();
+}
 
 void WangleQueue::sendFunction() {
     while (isRunning) {
@@ -14,10 +15,10 @@ void WangleQueue::sendFunction() {
 #ifdef DEBUG
         std::cout << msg << std::endl;
 #endif
-        Context *ctx = storage.getRandomContext();
+        Context *ctx = storage->getRandomContext();
         while (isRunning && ctx == nullptr) {
             std::this_thread::sleep_for(std::chrono::milliseconds(400));
-            ctx = storage.getRandomContext();
+            ctx = storage->getRandomContext();
         }
         ctx->fireWrite(std::forward<std::string>(msg));
     }
@@ -32,7 +33,7 @@ void WangleQueue::start() {
 
     inboundServer.childPipeline(std::make_shared<InQueuePipelineFactory>(InQueuePipelineFactory(queue)));
     inboundServer.bind(4004);
-    outboundServer.childPipeline(std::make_shared<OutQueuePipelineFactory>(OutQueuePipelineFactory(storage)));
+    outboundServer.childPipeline(std::make_shared<OutQueuePipelineFactory>(OutQueuePipelineFactory(&(*storage.get()))));
     outboundServer.bind(4005);
     inboundServer.waitForStop();
     outboundServer.waitForStop();
@@ -40,6 +41,8 @@ void WangleQueue::start() {
 }
 
 void WangleQueue::stop() {
+    inboundServer.stop();
+    outboundServer.stop();
 }
 
 CurrentState WangleQueue::getCurrentState() {

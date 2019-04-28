@@ -1,10 +1,3 @@
-/*
- * TypeDefinitions.h
- *
- *  Created on: Mar 21, 2019
- *      Author: titusen
- */
-
 #ifndef INC_TYPEDEFINITIONS_H_
 #define INC_TYPEDEFINITIONS_H_
 
@@ -19,7 +12,5 @@ using google::ERROR;
 using google::WARNING;
 
 typedef wangle::Pipeline<folly::IOBufQueue&, std::string> QueuePipeline;
-
-
 
 #endif /* INC_TYPEDEFINITIONS_H_ */

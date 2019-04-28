@@ -1,10 +1,3 @@
-/*
- * VectorContextStorage.cpp
- *
- *  Created on: Mar 22, 2019
- *      Author: titusen
- */
-
 #include <algorithm>
 #include "VectorContextStorage.h"
 

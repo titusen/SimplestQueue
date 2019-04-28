@@ -1,12 +1,5 @@
-/*
- * IContextStorage.h
- *
- *  Created on: Mar 21, 2019
- *      Author: titusen
- */
-
-#ifndef INC_ICONTEXTSTORAGE_H_
-#define INC_ICONTEXTSTORAGE_H_
+#ifndef ICONTEXTSTORAGE_H_
+#define ICONTEXTSTORAGE_H_
 
 #include <iostream>
 #include <wangle/channel/Handler.h>

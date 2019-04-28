@@ -1,13 +1,5 @@
-/*
- * OutboundHandler.h
- *
- *  Created on: Mar 21, 2019
- *      Author: titusen
- */
-
 #ifndef INC_OUTBOUNDHANDLER_H_
 #define INC_OUTBOUNDHANDLER_H_
-
 
 #include <iostream>
 #include <wangle/channel/Handler.h>
@@ -16,31 +8,29 @@
 #include "TypeDefinitions.h"
 #include "IContextStorage.h"
 
-class OutboundHandler : public wangle::HandlerAdapter<std::string> {
+class OutboundHandler: public wangle::HandlerAdapter<std::string> {
 public:
-    OutboundHandler(IContextStorage &storage) : storage(storage) {}
+    OutboundHandler(IContextStorage *storage) :
+            storage(storage) {
+    }
     void transportActive(Context *ctx) override;
     void transportInactive(Context *ctx) override;
-    void readException(Context* ctx, folly::exception_wrapper e) override {
-      LOG(INFO)<< folly::exceptionStr(e);
-      close(ctx);
-    }
-    void readEOF(Context* ctx) override {
-      close(ctx);
-    }
+    void readException(Context *ctx, folly::exception_wrapper e) override;
+    void readEOF(Context *ctx) override;
 private:
-    IContextStorage &storage;
+    IContextStorage *storage;
 };
 
 class OutQueuePipelineFactory: public wangle::PipelineFactory<QueuePipeline> {
 public:
-    OutQueuePipelineFactory(IContextStorage &storage) : storage(storage) {}
+    OutQueuePipelineFactory(IContextStorage *storage) :
+            storage(storage) {
+    }
     QueuePipeline::Ptr newPipeline(
             std::shared_ptr<folly::AsyncTransportWrapper> sock) override {
         auto pipeline = QueuePipeline::create();
         pipeline->addBack(wangle::AsyncSocketHandler(sock));
-        pipeline->addBack(
-            wangle::EventBaseHandler());
+        pipeline->addBack(wangle::EventBaseHandler());
         pipeline->addBack(wangle::LineBasedFrameDecoder(8192));
         pipeline->addBack(wangle::StringCodec());
         pipeline->addBack(OutboundHandler(storage));
@@ -48,7 +38,7 @@ public:
 
         return pipeline;
     }
-    IContextStorage &storage;
+    IContextStorage *storage;
 
 };
 

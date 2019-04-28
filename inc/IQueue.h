@@ -1,18 +1,10 @@
-/*
- * IQueue.h
- *
- *  Created on: Mar 9, 2019
- *      Author: titusen
- */
-
 #ifndef IQUEUE_H_
 #define IQUEUE_H_
 
 #include <stdint.h>
 
 enum QueueStatus {
-    Running,
-    NotRunning
+    Running, NotRunning
 };
 
 struct CurrentState {

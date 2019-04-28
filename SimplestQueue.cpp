@@ -19,6 +19,5 @@ int main(int argc, char **argv) {
     unique_ptr<IQueue> q(new WangleQueue());
     q->start();
 
-
     return 0;
 }

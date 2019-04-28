@@ -1,10 +1,3 @@
-/*
- * InboundHandler.h
- *
- *  Created on: Mar 18, 2019
- *      Author: titusen
- */
-
 #ifndef INBOUNDHANDLER_H_
 #define INBOUNDHANDLER_H_
 
@@ -16,28 +9,26 @@
 
 class InboundHandler: public wangle::HandlerAdapter<std::string> {
 public:
-    InboundHandler(folly::BlockingQueue<std::string> &queue) : queue(queue) {}
+    InboundHandler(folly::BlockingQueue<std::string> &queue) :
+            queue(queue) {
+    }
     void read(Context* ctx, std::string msg) override;
-    void readException(Context* ctx, folly::exception_wrapper e) override {
-      std::cout << exceptionStr(e) << std::endl;
-      close(ctx);
-    }
-    void readEOF(Context* ctx) override {
-      close(ctx);
-    }
+    void readException(Context* ctx, folly::exception_wrapper e) override;
+    void readEOF(Context* ctx) override;
 private:
     folly::BlockingQueue<std::string> &queue;
 };
 
 class InQueuePipelineFactory: public wangle::PipelineFactory<QueuePipeline> {
 public:
-    InQueuePipelineFactory(folly::BlockingQueue<std::string> &queue) : queue(queue) {}
+    InQueuePipelineFactory(folly::BlockingQueue<std::string> &queue) :
+            queue(queue) {
+    }
     QueuePipeline::Ptr newPipeline(
             std::shared_ptr<folly::AsyncTransportWrapper> sock) override {
         auto pipeline = QueuePipeline::create();
         pipeline->addBack(wangle::AsyncSocketHandler(sock));
-        pipeline->addBack(
-                wangle::EventBaseHandler());
+        pipeline->addBack(wangle::EventBaseHandler());
         pipeline->addBack(wangle::LineBasedFrameDecoder(8192));
         pipeline->addBack(wangle::StringCodec());
         pipeline->addBack(InboundHandler(queue));
