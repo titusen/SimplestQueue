@@ -16,7 +16,7 @@
 
 class WangleQueue : public IQueue {
 public:
-    WangleQueue();
+    WangleQueue(uint32_t receivePort, uint32_t sendPort);
     virtual ~WangleQueue();
     virtual void start();
     virtual void stop();
@@ -29,6 +29,7 @@ private:
     std::atomic<bool> isRunning;
     folly::UnboundedBlockingQueue<std::string> queue;
     wangle::ServerBootstrap<QueuePipeline> inboundServer, outboundServer;
+    uint32_t receivePort, sendPort;
 };
 
 #endif /* WANGLEQUEUE_H_ */

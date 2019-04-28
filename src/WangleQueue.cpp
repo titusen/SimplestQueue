@@ -3,7 +3,10 @@
 #include "WangleQueue.h"
 #include "VectorContextStorage.h"
 
-WangleQueue::WangleQueue() : storage(new VectorContextStorage()) {}
+WangleQueue::WangleQueue(uint32_t receivePort, uint32_t sendPort) :
+        storage(new VectorContextStorage()), receivePort(receivePort), sendPort(
+                sendPort) {
+}
 
 WangleQueue::~WangleQueue() {
     stop();
@@ -28,13 +31,17 @@ void WangleQueue::start() {
     const size_t numThreads = 4;
     isRunning = true;
     for (size_t i = 0; i < numThreads; ++i) {
-        threadPool.add([this](){this->sendFunction();});
+        threadPool.add([this]() {this->sendFunction();});
     }
 
-    inboundServer.childPipeline(std::make_shared<InQueuePipelineFactory>(InQueuePipelineFactory(queue)));
-    inboundServer.bind(4004);
-    outboundServer.childPipeline(std::make_shared<OutQueuePipelineFactory>(OutQueuePipelineFactory(&(*storage.get()))));
-    outboundServer.bind(4005);
+    inboundServer.childPipeline(
+            std::make_shared < InQueuePipelineFactory
+                    > (InQueuePipelineFactory(queue)));
+    inboundServer.bind(receivePort);
+    outboundServer.childPipeline(
+            std::make_shared < OutQueuePipelineFactory
+                    > (OutQueuePipelineFactory(&(*storage.get()))));
+    outboundServer.bind(sendPort);
     inboundServer.waitForStop();
     outboundServer.waitForStop();
 
