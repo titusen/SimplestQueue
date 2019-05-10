@@ -16,6 +16,7 @@ using namespace std;
 
 int main(int argc, char **argv) {
     google::InitGoogleLogging(argv[0]);
+    LOG(INFO) << "Starting Queue";
     unique_ptr<IQueue> q(new WangleQueue(4004, 4005));
     q->start();
 

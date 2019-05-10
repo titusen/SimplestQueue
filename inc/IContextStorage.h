@@ -1,8 +1,9 @@
 #ifndef ICONTEXTSTORAGE_H_
 #define ICONTEXTSTORAGE_H_
 
-#include <iostream>
 #include <wangle/channel/Handler.h>
+
+#include <iostream>
 
 typedef wangle::HandlerContext<std::string, std::string> Context;
 

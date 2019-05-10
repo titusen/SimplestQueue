@@ -3,13 +3,13 @@
 
 #include <stdint.h>
 
-enum QueueStatus {
+enum class QueueStatus {
     Running, NotRunning
 };
 
-struct CurrentState {
+struct State {
     uint16_t receivers, senders;
-    uint32_t messages;
+    size_t messages;
     QueueStatus status;
 };
 
@@ -18,7 +18,7 @@ public:
     virtual ~IQueue() = default;
     virtual void start() = 0;
     virtual void stop() = 0;
-    virtual CurrentState getCurrentState() = 0;
+    virtual State getCurrentState() = 0;
 };
 
 #endif /* IQUEUE_H_ */

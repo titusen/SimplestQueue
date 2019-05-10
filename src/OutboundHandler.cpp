@@ -5,6 +5,7 @@ void OutboundHandler::transportActive(Context *ctx) {
     std::cout << "I have a receiver\n";
 #endif
     storage->insert(ctx);
+    ++*contextCounter;
 }
 
 void OutboundHandler::transportInactive(Context *ctx) {
@@ -12,6 +13,7 @@ void OutboundHandler::transportInactive(Context *ctx) {
     std::cout << "I lost a receiver\n";
 #endif
     storage->remove(ctx);
+    --*contextCounter;
 }
 
 void OutboundHandler::readException(Context *ctx, folly::exception_wrapper e) {

@@ -1,9 +1,11 @@
 #ifndef VECTORCONTEXTSTORAGE_H_
 #define VECTORCONTEXTSTORAGE_H_
 
+#include "IContextStorage.h"
+
 #include <vector>
 #include <shared_mutex>
-#include "IContextStorage.h"
+#include <random>
 
 class VectorContextStorage : public IContextStorage {
 public:
@@ -14,6 +16,7 @@ public:
 private:
     std::vector<Context*> storage;
     std::shared_mutex access;
+    std::default_random_engine generator;
 };
 
 

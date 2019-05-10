@@ -1,7 +1,9 @@
+#include "VectorContextStorage.h"
+#include "WangleQueue.h"
+
 #include <chrono>
 
-#include "WangleQueue.h"
-#include "VectorContextStorage.h"
+DEFINE_int32(waitTimeForContext, 400, "A wait time for context");
 
 WangleQueue::WangleQueue(uint32_t receivePort, uint32_t sendPort) :
         storage(new VectorContextStorage()), receivePort(receivePort), sendPort(
@@ -20,10 +22,11 @@ void WangleQueue::sendFunction() {
 #endif
         Context *ctx = storage->getRandomContext();
         while (isRunning && ctx == nullptr) {
-            std::this_thread::sleep_for(std::chrono::milliseconds(400));
+            std::this_thread::sleep_for(
+                    std::chrono::milliseconds(FLAGS_waitTimeForContext));
             ctx = storage->getRandomContext();
         }
-        ctx->fireWrite(std::forward<std::string>(msg));
+        ctx->fireWrite(std::move(msg));
     }
 }
 
@@ -35,13 +38,16 @@ void WangleQueue::start() {
     }
 
     inboundServer.childPipeline(
-            std::make_shared < InQueuePipelineFactory
-                    > (InQueuePipelineFactory(queue)));
+            std::make_shared<InQueuePipelineFactory>(
+                    InQueuePipelineFactory(queue, &receiversCounter)));
     inboundServer.bind(receivePort);
     outboundServer.childPipeline(
-            std::make_shared < OutQueuePipelineFactory
-                    > (OutQueuePipelineFactory(&(*storage.get()))));
+            std::make_shared<OutQueuePipelineFactory>(
+                    OutQueuePipelineFactory(storage.get(), &sendersCounter)));
     outboundServer.bind(sendPort);
+
+    LOG(INFO) << "Queue started";
+
     inboundServer.waitForStop();
     outboundServer.waitForStop();
 
@@ -52,7 +58,12 @@ void WangleQueue::stop() {
     outboundServer.stop();
 }
 
-CurrentState WangleQueue::getCurrentState() {
-    CurrentState c;
+State WangleQueue::getCurrentState() {
+    State c = {
+            .receivers = receiversCounter,
+            .senders = sendersCounter,
+            .messages = queue.size(),
+            .status = (isRunning ? QueueStatus::Running :
+                                    QueueStatus::NotRunning) };
     return c;
 }

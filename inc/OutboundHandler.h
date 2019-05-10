@@ -1,17 +1,20 @@
 #ifndef INC_OUTBOUNDHANDLER_H_
 #define INC_OUTBOUNDHANDLER_H_
 
-#include <iostream>
-#include <wangle/channel/Handler.h>
-#include <folly/ProducerConsumerQueue.h>
-#include <wangle/channel/EventBaseHandler.h>
 #include "TypeDefinitions.h"
 #include "IContextStorage.h"
 
+#include <wangle/channel/Handler.h>
+#include <folly/ProducerConsumerQueue.h>
+#include <wangle/channel/EventBaseHandler.h>
+
+#include <iostream>
+#include <atomic>
+
 class OutboundHandler: public wangle::HandlerAdapter<std::string> {
 public:
-    OutboundHandler(IContextStorage *storage) :
-            storage(storage) {
+    OutboundHandler(IContextStorage *storage, std::atomic<uint16_t> *contextCounter) :
+            storage(storage), contextCounter(contextCounter) {
     }
     void transportActive(Context *ctx) override;
     void transportInactive(Context *ctx) override;
@@ -19,12 +22,13 @@ public:
     void readEOF(Context *ctx) override;
 private:
     IContextStorage *storage;
+    std::atomic<uint16_t> *contextCounter;
 };
 
 class OutQueuePipelineFactory: public wangle::PipelineFactory<QueuePipeline> {
 public:
-    OutQueuePipelineFactory(IContextStorage *storage) :
-            storage(storage) {
+    OutQueuePipelineFactory(IContextStorage *storage, std::atomic<uint16_t> *contextCounter) :
+            storage(storage), contextCounter(contextCounter) {
     }
     QueuePipeline::Ptr newPipeline(
             std::shared_ptr<folly::AsyncTransportWrapper> sock) override {
@@ -33,12 +37,14 @@ public:
         pipeline->addBack(wangle::EventBaseHandler());
         pipeline->addBack(wangle::LineBasedFrameDecoder(8192));
         pipeline->addBack(wangle::StringCodec());
-        pipeline->addBack(OutboundHandler(storage));
+        pipeline->addBack(OutboundHandler(storage, contextCounter));
         pipeline->finalize();
 
         return pipeline;
     }
+private:
     IContextStorage *storage;
+    std::atomic<uint16_t> *contextCounter;
 
 };
 
