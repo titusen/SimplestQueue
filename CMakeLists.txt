@@ -3,6 +3,10 @@ cmake_minimum_required(VERSION 3.6)
 project(SimplestQueue)
 
 find_package( Boost 1.40 COMPONENTS program_options REQUIRED )
+find_package(Folly COMPONENTS program_options REQUIRED )
+find_package(Wangle COMPONENTS program_options REQUIRED )
+find_package(Fizz COMPONENTS program_options REQUIRED )
+
 include_directories( ${Boost_INCLUDE_DIR} )
 
 set(CMAKE_CXX_STANDARD 17)
