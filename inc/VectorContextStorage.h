@@ -12,7 +12,7 @@ public:
     virtual ~VectorContextStorage() = default;
     virtual void insert(Context *ctx);
     virtual void remove(Context *xtx);
-    virtual Context* getRandomContext();
+    virtual bool sendToRandomContext(std::string &&msg);
 private:
     std::vector<Context*> storage;
     std::shared_mutex access;

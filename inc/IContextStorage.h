@@ -12,7 +12,7 @@ public:
     ~IContextStorage() = default;
     virtual void insert(Context*) = 0;
     virtual void remove(Context*) = 0;
-    virtual Context* getRandomContext() = 0;
+    virtual bool sendToRandomContext(std::string &&msg) = 0;
 };
 
 #endif /* INC_ICONTEXTSTORAGE_H_ */
