@@ -22,13 +22,12 @@ void VectorContextStorage::remove(Context* ctx) {
     }
 }
 
-bool VectorContextStorage::sendToRandomContext(std::string &&msg) {
+Context* VectorContextStorage::getRandomContext() {
     shared_lock<shared_mutex> lock(access);
     if (storage.empty()) {
-        return false;
+        return nullptr;
     }
     std::uniform_int_distribution<int> distribution(0, storage.size() - 1);
-    storage.at(distribution(generator))->fireWrite(std::move(msg));
-    return true;
+    return storage.at(distribution(generator));
 }
 

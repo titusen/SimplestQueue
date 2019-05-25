@@ -20,10 +20,13 @@ void WangleQueue::sendFunction() {
 #ifdef DEBUG
         std::cout << msg << std::endl;
 #endif
-        while (isRunning && !storage->sendToRandomContext(std::move(msg))) {
+        Context *ctx = storage->getRandomContext();
+        while (isRunning && ctx == nullptr) {
             std::this_thread::sleep_for(
                     std::chrono::milliseconds(FLAGS_waitTimeForContext));
+            ctx = storage->getRandomContext();
         }
+        ctx->fireWrite(std::move(msg));
     }
 }
 

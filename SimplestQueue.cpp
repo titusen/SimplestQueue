@@ -1,3 +1,5 @@
+#include <iostream>
+#include <memory>
 #include <wangle/channel/Handler.h>
 #include <folly/ProducerConsumerQueue.h>
 #include <folly/init/Init.h>
@@ -9,9 +11,6 @@
 #include "TypeDefinitions.h"
 #include "IQueue.h"
 #include "WangleQueue.h"
-
-#include <iostream>
-#include <memory>
 
 using namespace std;
 
