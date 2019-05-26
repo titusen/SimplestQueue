@@ -94,7 +94,7 @@ int main(int argc, char** argv) {
                 line = ss.str();
             }
 
-            pipeline->write(line + "\r\n").get();
+            pipeline->write(line).get();
             if (line == "bye") {
                 pipeline->close();
                 break;
