@@ -19,9 +19,6 @@ public:
     void transportActive(Context *ctx) override;
     void transportInactive(Context *ctx) override;
     void readException(Context *ctx, folly::exception_wrapper e) override;
-    void readEOF(Context *ctx) override;
-//    folly::Future<folly::Unit> writeException(Context* ctx,
-//                                                       folly::exception_wrapper e) override;
 private:
     IContextStorage *storage;
     std::atomic<uint16_t> *contextCounter;

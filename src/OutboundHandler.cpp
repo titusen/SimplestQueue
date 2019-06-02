@@ -18,13 +18,5 @@ void OutboundHandler::transportInactive(Context *ctx) {
 
 void OutboundHandler::readException(Context *ctx, folly::exception_wrapper e) {
   LOG(INFO)<< folly::exceptionStr(e);
-  //close(ctx);
-}
-void OutboundHandler::readEOF(Context *ctx) {
-  //close(ctx);
 }
 
-//folly::Future<folly::Unit> OutboundHandler::writeException(Context* ctx,
-//        folly::exception_wrapper e) {
-//    std::cout << folly::exceptionStr(e);
-//}

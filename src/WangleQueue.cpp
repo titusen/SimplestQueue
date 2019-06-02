@@ -30,11 +30,11 @@ void WangleQueue::sendFunction() {
                         std::chrono::milliseconds(FLAGS_waitTimeForContext));
                 ctxWrapper = storage->getRandomContext();
             }
-            ctxWrapper->getContext()->fireWrite(std::move(msg)).get(std::chrono::milliseconds(100));
+            ctxWrapper->getContext()->fireWrite(std::move(msg)).get();
 
         }
         catch (const folly::AsyncSocketException& e) {
-            LOG(WARNING) << "AsyncSocket exception caught\n";
+            LOG(WARNING) << "AsyncSocket exception caught: " << e.what() << std::endl;
             storage->remove(ctxWrapper->getContext());
             ctxWrapper = nullptr;
         }
