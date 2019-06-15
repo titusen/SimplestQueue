@@ -2,6 +2,7 @@
 #include "WangleQueue.h"
 
 #include <chrono>
+#include <shared_mutex>
 
 DEFINE_int32(waitTimeForContext, 400, "A wait time for context");
 
@@ -18,15 +19,30 @@ void WangleQueue::sendFunction() {
     while (isRunning) {
         std::string msg = queue.take();
 #ifdef DEBUG
-        std::cout << msg << std::endl;
+        std::cout << "Proccessing: " << msg << std::endl;
 #endif
-        Context *ctx = storage->getRandomContext();
-        while (isRunning && ctx == nullptr) {
-            std::this_thread::sleep_for(
-                    std::chrono::milliseconds(FLAGS_waitTimeForContext));
-            ctx = storage->getRandomContext();
+        std::shared_ptr<ContextWrapper> ctxWrapper;
+        try
+        {
+            ctxWrapper = storage->getRandomContext();
+            while (isRunning && ctxWrapper == nullptr) {
+                std::this_thread::sleep_for(
+                        std::chrono::milliseconds(FLAGS_waitTimeForContext));
+                ctxWrapper = storage->getRandomContext();
+            }
+            ctxWrapper->getContext()->fireWrite(std::move(msg)).get();
+
         }
-        ctx->fireWrite(std::move(msg));
+        catch (const folly::AsyncSocketException& e) {
+            LOG(WARNING) << "AsyncSocket exception caught: " << e.what() << std::endl;
+            storage->remove(ctxWrapper->getContext());
+            ctxWrapper = nullptr;
+        }
+        catch (const std::exception& e) {
+            LOG(ERROR) << " exception caught\n";
+            storage->remove(ctxWrapper->getContext());
+            ctxWrapper = nullptr;
+        }
     }
 }
 
@@ -54,6 +70,7 @@ void WangleQueue::start() {
 }
 
 void WangleQueue::stop() {
+    isRunning = false;
     inboundServer.stop();
     outboundServer.stop();
 }

@@ -4,7 +4,6 @@
 #include "IContextStorage.h"
 
 #include <vector>
-#include <shared_mutex>
 #include <random>
 
 class VectorContextStorage : public IContextStorage {
@@ -12,9 +11,9 @@ public:
     virtual ~VectorContextStorage() = default;
     virtual void insert(Context *ctx);
     virtual void remove(Context *xtx);
-    virtual Context* getRandomContext();
+    virtual std::shared_ptr<ContextWrapper> getRandomContext();
 private:
-    std::vector<Context*> storage;
+    std::vector<std::shared_ptr<ContextWrapper>> storage;
     std::shared_mutex access;
     std::default_random_engine generator;
 };
