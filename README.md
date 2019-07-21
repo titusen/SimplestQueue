@@ -2,10 +2,10 @@
 A try to make something faster than kafka and an exercise.
 
 # Dependencies
-  Following facebook libraries are reqiered to be in the same release (recommended v2019.03.04.00) :
-  1. folly
-  2. wangle
-  3. fizz
+  Following facebook libraries are requiered to be compatible releases (see recommended tags) :
+  1. folly v2019.06.17.00
+  2. wangle v2019.06.24.00
+  3. fizz v2019.06.24.00
 
 # Buidling
   In project directory run:

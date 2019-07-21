@@ -1,11 +1,12 @@
 #include "InboundHandler.h"
 
-#include <iostream>
+#include <thread>
+#include <chrono>
 
 void InboundHandler::read(Context* ctx, std::string msg) {
-#ifdef DEBUG
-    std::cout << "Recevied massage: \"" << msg << "\"\n";
-#endif
+
+    LOG_DEBUG( "Recevied massage: \"" << msg << "\"\n")
+
     queue.add(std::move(msg));
 }
 
@@ -18,9 +19,11 @@ void InboundHandler::readEOF(Context* ctx) {
 }
 
 void InboundHandler::transportActive(Context* ctx) {
+    LOG_DEBUG("Got a sender\n")
     ++*contextCounter;
 }
 
 void InboundHandler::transportInactive(Context* ctx) {
+    LOG_DEBUG("Lost a sender\n")
     --*contextCounter;
 }

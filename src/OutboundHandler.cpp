@@ -1,17 +1,13 @@
 #include "OutboundHandler.h"
 
 void OutboundHandler::transportActive(Context *ctx) {
-#ifdef DEBUG
-    std::cout << "I have a receiver\n";
-#endif
+    LOG_DEBUG("Got a receiver\n")
     storage->insert(ctx);
     ++*contextCounter;
 }
 
 void OutboundHandler::transportInactive(Context *ctx) {
-#ifdef DEBUG
-    std::cout << "I lost a receiver\n";
-#endif
+    LOG_DEBUG( "Lost a receiver\n")
     storage->remove(ctx);
     --*contextCounter;
 }

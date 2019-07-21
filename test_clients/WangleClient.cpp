@@ -90,11 +90,11 @@ int main(int argc, char** argv) {
             else {
                 std::this_thread::sleep_for(std::chrono::milliseconds(FLAGS_sleep_time_millis));
                 std::stringstream ss;
-                ss << getpid() << "  " << counter++ << std::endl;
+                ss << getpid() << "  " << counter++;
                 line = ss.str();
             }
 
-            pipeline->write(line).get();
+            pipeline->write(line + "\n").get();
             if (line == "bye") {
                 pipeline->close();
                 break;

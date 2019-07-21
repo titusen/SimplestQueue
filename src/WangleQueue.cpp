@@ -18,9 +18,7 @@ WangleQueue::~WangleQueue() {
 void WangleQueue::sendFunction() {
     while (isRunning) {
         std::string msg = queue.take();
-#ifdef DEBUG
-        std::cout << "Proccessing: " << msg << std::endl;
-#endif
+        LOG_DEBUG("Proccessing: " << msg)
         std::shared_ptr<ContextWrapper> ctxWrapper;
         try
         {
@@ -34,12 +32,12 @@ void WangleQueue::sendFunction() {
 
         }
         catch (const folly::AsyncSocketException& e) {
-            LOG(WARNING) << "AsyncSocket exception caught: " << e.what() << std::endl;
+            LOG_WARN( "AsyncSocket exception caught: " << e.what());
             storage->remove(ctxWrapper->getContext());
             ctxWrapper = nullptr;
         }
         catch (const std::exception& e) {
-            LOG(ERROR) << " exception caught\n";
+            LOG_ERROR( " exception caught\n");
             storage->remove(ctxWrapper->getContext());
             ctxWrapper = nullptr;
         }
@@ -62,7 +60,7 @@ void WangleQueue::start() {
                     OutQueuePipelineFactory(storage.get(), &sendersCounter)));
     outboundServer.bind(sendPort);
 
-    LOG(INFO) << "Queue started";
+    LOG_DEBUG( "Queue started")
 
     inboundServer.waitForStop();
     outboundServer.waitForStop();

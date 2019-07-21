@@ -7,11 +7,7 @@ find_package(Folly COMPONENTS program_options REQUIRED )
 find_package(Wangle COMPONENTS program_options REQUIRED )
 find_package(Fizz COMPONENTS program_options REQUIRED )
 
-option(WITH_DEBUG "Option description" OFF)
-
-if(WITH_DEBUG)
-  add_definitions(-DDEBUG=1)
-endif()
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__FILENAME__='\"$(subst ${CMAKE_SOURCE_DIR}/,,$(abspath $<))\"'")
 
 include_directories( ${Boost_INCLUDE_DIR} )
 
